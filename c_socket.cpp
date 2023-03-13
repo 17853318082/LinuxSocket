@@ -39,7 +39,6 @@ int main(){
     s_addr.sin_family = AF_INET;
     s_addr.sin_port = htons(SERVER_PORT);  
     inet_pton(AF_INET,"127.0.0.0",&s_addr.sin_addr.s_addr);       // server ip 
-
     // 1.create client socket
     cfd = socket(AF_INET,SOCK_STREAM,0);
     check(cfd,"socket");
