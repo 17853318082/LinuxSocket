@@ -1,3 +1,6 @@
+/*
+  state socket methods file
+*/
 #include<iostream>
 #include<sys/types.h>
 #include<sys/socket.h>
@@ -19,12 +22,11 @@ int Bind(int sockfd, const struct sockaddr *addr,socklen_t addrlen);  //bind
 int Listen(int sockfd, int backlog);                                 //listen
 int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);   //accept
 ssize_t Read(int fd,char *ptr,size_t nbytes);                   // read
-ssize_t Write(int fd,const char *ptr,size_t nbytes);
-int Close(int fd);
-ssize_t Readn(int fd,char *vptr,size_t n);
-ssize_t Write(int fd,const char* vptr,size_t n);
-static ssize_t my_read(int fd, char *ptr);
-ssize_t Readline(int fd, char *vptr, size_t maxlen);
-
+ssize_t Write(int fd,const char *ptr,size_t nbytes);            //write
+int Close(int fd);                                            // close
+ssize_t Readn(int fd,char *vptr,size_t n);                   //readn
+ssize_t Write(int fd,const char* vptr,size_t n);            // write
+static ssize_t my_read(int fd, char *ptr);                  //my_read
+ssize_t Readline(int fd, char *vptr, size_t maxlen);       // read line data
 
 #endif

@@ -57,7 +57,7 @@ int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen){
     return n;
 }
 // read bytes
-ssize_t Read(int fd,void *ptr,size_t nbytes){
+ssize_t Read(int fd,char *ptr,size_t nbytes){
     ssize_t n=0;
 
     n = read(fd,ptr,nbytes);
