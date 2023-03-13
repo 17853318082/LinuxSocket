@@ -1,5 +1,5 @@
 /*
-  
+  pakage socket method
 */
 #include "my_socket.h"
 
@@ -54,5 +54,40 @@ int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen){
         error("accept");
     }
     success("accept");
+    return n;
+}
+// read bytes
+ssize_t Read(int fd,void *ptr,size_t nbytes){
+    ssize_t n=0;
+
+    n = read(fd,ptr,nbytes);
+    if(n==-1){
+        error("read");
+        return n;
+    }
+    success("read");
+    return n;
+}
+
+//write bytes
+ssize_t Write(int fd,const void *ptr,size_t nbytes){
+    ssize_t n =0;
+
+    n = write(fd,ptr,nbytes);
+    if(n==-1){
+        error("write");
+        return n;
+    }
+    return n;
+}
+// close socket byte simbol
+int Close(int fd){
+    int n =0;
+    n = close(fd);
+    if(n==-1){
+        error("close");
+        return n;
+    }
+    success("close");
     return n;
 }
