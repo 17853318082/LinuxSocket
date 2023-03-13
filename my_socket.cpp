@@ -1,7 +1,7 @@
 /*
   pakage socket method
 */
-#include "my_socket.h"
+#include "my_socket.hpp"
 
 // return error
 void error(const std::string &str){
@@ -90,4 +90,12 @@ int Close(int fd){
     }
     success("close");
     return n;
+}
+
+ssize_t Readn(int fd,void *vptr,size_t n){
+
+    size_t nleft=0;       // usigned int remain bytes
+    ssize_t nread=0;      // int 
+
+    return nleft;
 }
