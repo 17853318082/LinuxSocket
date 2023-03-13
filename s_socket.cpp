@@ -7,12 +7,13 @@
 #include<netinet/in.h>
 #include<stdio.h>
 #include<unistd.h>
-#include <arpa/inet.h>
+#include<arpa/inet.h>
 
 using namespace std;
 
 void error(const string &s){
     cout<<s<<" error!"<<endl;
+    exit(1);
 }
 void success(const string &s){
     cout<<s<<" success"<<endl;
@@ -20,7 +21,7 @@ void success(const string &s){
 
 int main(){
     int s_listen;   // server socket
-    int s_client;   // accept client request
+    int s_client;   // accept client socket request
     int check_bind;  //check bind
     int check_listen;
     bool run = true;
@@ -32,6 +33,7 @@ int main(){
     s_addr.sin_family = AF_INET;
     s_addr.sin_addr.s_addr = htonl(INADDR_ANY);   // any ip addr;
     cout<<"server-ip: "<<inet_ntop(AF_INET,&s_addr.sin_addr.s_addr,s_ip,sizeof(s_ip))<<" "<<"s_port: "<<ntohs(s_addr.sin_port)<<endl; // print server ip and port
+
     // create socket
     s_listen = socket(AF_INET,SOCK_STREAM,0);
     if(s_listen == -1){
@@ -49,6 +51,7 @@ int main(){
     }else{
         success("bind");
     }
+
     // listen client request
     check_listen = listen(s_listen,128);
     if(check_listen == -1){
@@ -74,6 +77,7 @@ int main(){
         write(s_client,buf,request_len);
         success("response");
     }
+
     // close socket link
     close(s_listen);
     close(s_client);
