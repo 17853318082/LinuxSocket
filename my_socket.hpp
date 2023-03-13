@@ -18,8 +18,13 @@ int Socket(int domain, int type, int protocol);     //socket
 int Bind(int sockfd, const struct sockaddr *addr,socklen_t addrlen);  //bind
 int Listen(int sockfd, int backlog);                                 //listen
 int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);   //accept
-ssize_t Read(int fd,void *ptr,size_t nbytes);                   // read
-ssize_t Write(int fd,const void *ptr,size_t nbytes);
+ssize_t Read(int fd,char *ptr,size_t nbytes);                   // read
+ssize_t Write(int fd,const char *ptr,size_t nbytes);
 int Close(int fd);
+ssize_t Readn(int fd,char *vptr,size_t n);
+ssize_t Write(int fd,const char* vptr,size_t n);
+static ssize_t my_read(int fd, char *ptr);
+ssize_t Readline(int fd, char *vptr, size_t maxlen);
+
 
 #endif
