@@ -27,7 +27,7 @@ int main(){
     int ret;
     char buf[BUFSIZ];
     c_addr_len = sizeof(c_addr);
-    memset(&s_addr,0,sizeof(s_addr));
+    memset(&s_addr,0,sizeof(s_addr));               // 将地址结构清零
     s_addr.sin_family = AF_INET;
     s_addr.sin_port= htons(SERVER_PORT);
     s_addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -41,16 +41,16 @@ int main(){
     Listen(s_sock,128);
 
     // consist accept
-    bool run = true;
+    bool run = true;  
     while(run){
         // wait client request
         c_sock = Accept(s_sock,(struct sockaddr*)&c_addr,&c_addr_len); 
         // create muti thread
-        pid = fork();
+        pid = fork();                    // 开启一个子进程
         if(pid<0){
             error("fork");                // thread create error
-        }else if(pid == 0){
-            close(s_sock);                
+        }else if(pid == 0){              // 成功创建子进程，结束掉while循环，执行接下来的代码
+            close(s_sock);               // 子进程中的服务器socket
             run = false;
             continue;
         }else{
@@ -66,18 +66,18 @@ int main(){
             continue;   
         }
     }
-    if(pid == 0){                        // 
+    if(pid == 0){                        // 子进程的执行
         bool read_run = true;
         while(read_run){
-            ret = Read(c_sock,buf,sizeof(buf));
+            ret = Read(c_sock,buf,sizeof(buf));      // 读取客户端传过来的数据
             if(ret == 0){
                 close(c_sock);
             }
             for(int i=0;i<ret;i++){
                 buf[i] = toupper(buf[i]);
             }
-            write(c_sock,buf,ret);
-            write(STDOUT_FILENO,buf,ret);             // output on screen  
+            write(c_sock,buf,ret);                   // 向客户端发送数据
+            write(STDOUT_FILENO,buf,ret);           // 显示到终端中  
         }
     }
     close(s_sock);
