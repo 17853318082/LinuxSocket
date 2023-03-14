@@ -9,6 +9,8 @@
 #include<unistd.h>
 #include<arpa/inet.h>
 #include<string>
+#include<errno.h>
+#include<pthread.h>
 
 #ifndef _WRAP_H_
 #define _WRAP_H_
@@ -26,7 +28,7 @@ ssize_t Write(int fd,const char *ptr,size_t nbytes);            //write
 int Close(int fd);                                            // close
 ssize_t Readn(int fd,char *vptr,size_t n);                   //readn
 ssize_t Write(int fd,const char* vptr,size_t n);            // write
-static ssize_t my_read(int fd, char *ptr);                  //my_read
+ssize_t my_read(int fd, char *ptr);                  //my_read
 ssize_t Readline(int fd, char *vptr, size_t maxlen);       // read line data
 
 #endif

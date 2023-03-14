@@ -141,7 +141,7 @@ ssize_t Write(int fd,const char* vptr,size_t n){
     return n;
 }
 
-static ssize_t my_read(int fd, char *ptr){
+ssize_t my_read(int fd, char *ptr){
 	static int read_cnt;
 	static char *read_ptr;
 	static char read_buf[100];
@@ -181,8 +181,3 @@ ssize_t Readline(int fd, char *vptr, size_t maxlen){
 	*ptr  = 0;
 	return n;
 }
-
-// int main(){
-
-//     return 0;
-// }
