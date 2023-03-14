@@ -1,20 +1,22 @@
 /*
   实现类中定义的函数
 */
+#include "xthread.h"
 
-#include "XThread.h"
-
+// 启动线程
 void XThread::Start()
 {
     std::cout << "创建子进程" << std::endl;
     is_exit_ = false;
     th_ = std::thread(&XThread::Main, this); // 创建一个线程对象,并执行Main方法
 }
+// 停止线程
 void XThread::Stop()
 {
     is_exit_ = true; // 标记退出线程，等待线程退出
     Wait();
 }
+// 线程等到
 void XThread::Wait()
 {
     if (th_.joinable())
@@ -22,7 +24,11 @@ void XThread::Wait()
         th_.join();
     }
 }
+// 查看线程是否关闭
 bool XThread::is_exit()
 { // 查看线程是否已退出
     return is_exit_;
 }
+
+
+//  业务逻辑

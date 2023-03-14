@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include <unistd.h>
-#include "XThread.cpp"
+#include "xthread.cpp"
 
 class MyThread
 {
