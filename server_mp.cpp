@@ -45,6 +45,8 @@ int main()
 
     // consist accept
     bool run = true;
+
+    // 循环接听 客户端链接，并监听服务器发送消息
     while (run)
     {
         // wait client request

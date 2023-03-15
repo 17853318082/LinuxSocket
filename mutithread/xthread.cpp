@@ -20,8 +20,8 @@ void XThread::Stop()
 void XThread::Wait()
 {
     if (th_.joinable())
-    { // 是否可以进行链接，被销毁的线程无法加入
-        th_.join();
+    {               // 是否可以进行链接，被销毁的线程无法加入
+        th_.join(); // 线程回收函数，与主线程链接，对子线程进行回收
     }
 }
 // 查看线程是否关闭
@@ -30,5 +30,3 @@ bool XThread::is_exit()
     return is_exit_;
 }
 
-
-//  业务逻辑

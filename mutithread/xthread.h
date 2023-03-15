@@ -17,15 +17,17 @@
 class XThread
 {
 public:
-    virtual void Start(); // 进程开始入口
-    virtual void Stop();  // 线程结束
-    virtual void Wait();  // 线程加入
-    bool is_exit();
+  virtual void Start(); // 进程开始入口
+  virtual void Stop();  // 线程结束
+  virtual void Wait();  // 线程加入
+  bool is_exit();
+
+protected:
+  bool is_exit_ = false; // 退出标记   ,开放给子类判断退出
 private:
-    // 线程入口
-    virtual void Main() = 0;
-    std::thread th_;       // 声明一个线程对象
-    bool is_exit_ = false; // 退出标记
+  // 线程入口
+  virtual void Main() = 0;
+  std::thread th_; // 声明一个线程对象
 };
 
 #endif
