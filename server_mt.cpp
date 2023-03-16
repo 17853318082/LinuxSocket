@@ -12,12 +12,12 @@
 
 using namespace std;
 
-#define SERVER_PORT 8000
+#define SERVER_PORT 8000 // 端口号宏
 
 void ThreadMain(int c_sock)
 {
     // 子线程开始
-    cout<<"子线程:"<<this_thread::get_id()<<" 开启服务"<<endl;
+    cout << "子线程:" << this_thread::get_id() << " 开启服务" << endl;
     // 设置读取缓冲区
     char buf[BUFSIZ];
     // 循环监听客户端请求
@@ -30,7 +30,7 @@ void ThreadMain(int c_sock)
         if (read_len == 0)
         {
             // 关闭客户端
-            cout<<"客户端无消息传回，关闭客户端socket"<<endl;
+            cout << "客户端无消息传回，关闭客户端socket" << endl;
             Close(c_sock);
             return;
         }
@@ -41,15 +41,14 @@ void ThreadMain(int c_sock)
             buf[i] = toupper(buf[i]);
         }
         // 回复客户端
-        Write(c_sock,buf,read_len);
+        Write(c_sock, buf, read_len);
         // 打印到控制台
-        Write(STDOUT_FILENO,buf,read_len);
-
+        Write(STDOUT_FILENO, buf, read_len);
     }
     // 子线程结束,关闭客户端socket
-    cout<<"客户端请求结束，关闭客户端"<<endl;
+    cout << "客户端请求结束，关闭客户端" << endl;
     Close(c_sock);
-    cout<<"子线程:"<<this_thread::get_id()<<" 退出服务"<<endl;
+    cout << "子线程:" << this_thread::get_id() << " 退出服务" << endl;
     return;
 }
 
@@ -87,7 +86,7 @@ int main()
         else
         {
             // 创建一个线程
-            cout<<"创建一个子线程"<<endl;
+            cout << "创建一个子线程" << endl;
             thread sub_thread(ThreadMain, c_sock);
             // 将定义线程与主线程链接
             // if (sub_thread.joinable())
