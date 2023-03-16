@@ -3,6 +3,7 @@
         "string": "cpp",
         "iostream": "cpp",
         "ostream": "cpp",
-        "condition_variable": "cpp"
+        "condition_variable": "cpp",
+        "chrono": "cpp"
     }
 }

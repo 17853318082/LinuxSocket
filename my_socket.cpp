@@ -143,7 +143,7 @@ ssize_t Readn(int fd, char *vptr, size_t n)
     return n - nleft;
 }
 
-ssize_t Write(int fd, const char *vptr, size_t n)
+ssize_t Writen(int fd, const char *vptr, size_t n)
 {
     size_t nleft;
     ssize_t nwritten;
