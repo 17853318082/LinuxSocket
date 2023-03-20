@@ -16,12 +16,12 @@ using namespace std;
 
 /*函数声明*/
 
-void EventSet(struct myevent_s *ev, int fd, void (*call_back)(int, int, void *), void *arg);
-void EventAdd(int efd, int events, struct myevent_s *ev);
-void EventDel(int efd, struct myevent_s *ev);
-void ReciveData(int fd, int events, void *arg);
-void SendData(int fd, int events, void *arg);
-void AcceptConnect(int lfd, int events, void *arg);
+void EventSet(struct myevent_s *ev, int fd, void (*call_back)(int, int, void *), void *arg); // 初始化一个事件结构体
+void EventAdd(int efd, int events, struct myevent_s *ev);                                    // 向红黑树中添加一个节点
+void EventDel(int efd, struct myevent_s *ev);                                                //  从红黑树中删除节点
+void ReciveData(int fd, int events, void *arg);                                              // 接受客户端数据
+void SendData(int fd, int events, void *arg);                                                // 删除客户端数据
+void AcceptConnect(int lfd, int events, void *arg);                                          // 与客户端建立链接
 
 /*描述就绪文件描述符相关信息*/
 struct myevent_s
@@ -55,7 +55,7 @@ void EventSet(struct myevent_s *ev, int fd, void (*call_back)(int, int, void *),
 /*回调函数，接收数据到结构体buf*/
 void ReciveData(int fd, int events, void *arg)
 {
-    cout<<"---------------------收---------------------"<<endl;
+    cout << "---------------------收---------------------" << endl;
     struct myevent_s *ev = (struct myevent_s *)arg;
     int len;
     len = recv(fd, ev->buf, sizeof(ev->buf), 0);
@@ -64,18 +64,19 @@ void ReciveData(int fd, int events, void *arg)
     {
         ev->len = len;
         ev->buf[len] = '\0';
-        cout << "receive:"<<"fd:"<<fd
+        cout << "receive:"
+             << "fd:" << fd << " events:" << events
              << " len:" << ev->len << " content:" << ev->buf;
         EventSet(ev, fd, SendData, ev); // 设置该fd写回调函数
         EventAdd(g_efd, EPOLLOUT, ev);  // 将fd加入红黑树g_efd中，监听写事件
     }
     else if (len == 0)
     {
-        cout<<"----------------------关闭--------------------"<<endl;
+        cout << "---------------------关闭链接--------------------" << endl;
         // 客户端已关闭
         Close(fd); // 关闭客户端字节符
         // 地址相减得到相对的数据位置
-        cout << "closed " << fd << "pos " << ev - g_events << endl;
+        cout << "closed: fd:" << fd << " pos:" << ev - g_events << endl;
     }
     else
     {
@@ -88,7 +89,7 @@ void ReciveData(int fd, int events, void *arg)
 /*写事件回调函数，向客户端发送数据*/
 void SendData(int fd, int events, void *arg)
 {
-    cout<<"---------------------发---------------------"<<endl;
+    cout << "---------------------发---------------------" << endl;
     // 从缓冲区中把需要发送给用户的数据发出去
     struct myevent_s *ev = (struct myevent_s *)arg;
     int len;
@@ -98,7 +99,7 @@ void SendData(int fd, int events, void *arg)
 
     if (len > 0)
     {
-        cout << "send fd:" << fd << " len:" << len << " content:" << ev->buf;
+        cout << "send fd:" << fd << " events:" << events << " len:" << len << " content:" << ev->buf;
         // 初始化myevent_s结构体
         EventSet(ev, fd, ReciveData, ev);
         // 加入监听红黑树,将回调函数设置为读事件
@@ -118,8 +119,8 @@ void EventAdd(int efd, int events, struct myevent_s *ev)
     //
     struct epoll_event epv = {0, {0}};
     int op;
-    epv.data.ptr = ev;
     epv.events = ev->events = events; // EPOLLIN,红黑树事件，加入红黑树或者是删除
+    epv.data.ptr = ev;
     // 该结构体未在g_efd红黑树里，设置添加
     if (ev->status == 0)
     {
@@ -159,7 +160,7 @@ void EventDel(int efd, struct myevent_s *ev)
 /*accept建立链接,的回调函数*/
 void AcceptConnect(int lfd, int events, void *arg)
 {
-    cout<<"-----------------------建立链接------------------------"<<endl;
+    cout << "----------------------建立链接------------------------" << endl;
     struct sockaddr_in c_addr;
     socklen_t c_addr_len = sizeof(c_addr);
     int flag = 1;                                                   // 标记是否超出存储的最大容量
@@ -173,7 +174,7 @@ void AcceptConnect(int lfd, int events, void *arg)
         if (errno != EAGAIN && errno != EINTR)
         {
             // 错误处理
-            cout<<"accept  "<<strerror(errno)<<endl;
+            cout << "accept  " << strerror(errno) << endl;
         }
         // 非上面那两个错误时直接返回错误
         cout << "accept  " << strerror(errno) << endl;
@@ -208,12 +209,13 @@ void AcceptConnect(int lfd, int events, void *arg)
         // 给cfd一个myevent_s结构体
         EventSet(&g_events[pos], cfd, ReciveData, &g_events[pos]);
         // 将初始化的结构体加入到监听红黑树中, 必须先设置为非阻塞才能加入
-        EventAdd(g_efd, EPOLLIN, &g_events[pos]); // 将cfd添加到红黑树g_efd中
+        EventAdd(g_efd, events, &g_events[pos]); // 将cfd添加到红黑树g_efd中
 
     } while (0);
     // 创建并加入成功，打印创建信息
     cout << "new connect:"
-         << "time:" << g_events[pos].last_active << " pos:" << pos << endl;
+         << "fd:" << g_events[pos].fd
+         << " time:" << g_events[pos].last_active << " pos:" << pos << endl;
     return;
 }
 
@@ -233,7 +235,7 @@ int main()
 
     struct epoll_event events[MAX_EVENTS + 1]; // 存储满足监听条件的my_events
     cout << "准备就绪开始监听>>" << endl;
-    int checkpos = 1;
+    int checkpos = 1;   // 记录超时客户的位置
     // 循环监听客户请求
     while (true)
     {
@@ -275,12 +277,12 @@ int main()
         {
             struct myevent_s *ev = (struct myevent_s *)events[i].data.ptr;
             // 客户的读写事件
-            if (ev->events & EPOLLIN || events[i].events & EPOLLIN)
+            if (ev->events & EPOLLIN && events[i].events & EPOLLIN)
             {
                 // 读就绪事件  ,这个就包含了，客户端链接事件
                 ev->call_back(ev->fd, events[i].events, ev->arg); // 执行读事件
             }
-            if (ev->events & EPOLLOUT || events[i].events & EPOLLOUT)
+            if (ev->events & EPOLLOUT && events[i].events & EPOLLOUT)
             {
                 // 写就绪事件，向客户端发送
                 ev->call_back(ev->fd, events[i].events, ev->arg);
