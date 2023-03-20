@@ -11,6 +11,8 @@
 #include <string>
 #include <errno.h>
 #include <pthread.h>
+#include <fcntl.h>
+#include <string.h>
 
 #ifndef _WRAP_H_
 #define _WRAP_H_
@@ -27,8 +29,9 @@ ssize_t Read(int fd, char *ptr, size_t nbytes);                       // read封
 ssize_t Write(int fd, const void *ptr, size_t nbytes);                // write
 int Close(int fd);                                                    // close
 ssize_t Readn(int fd, char *vptr, size_t n);                          // 读n个字节的数据
-ssize_t Writen(int fd, const char *vptr, size_t n);                    // write
+ssize_t Writen(int fd, const char *vptr, size_t n);                   // write
 ssize_t my_read(int fd, char *ptr);                                   // my_read
 ssize_t Readline(int fd, char *vptr, size_t maxlen);                  // 读一行数据
+int InitListenSocket(short port);                                     // 初始化监听socket  返回socket套接字
 
 #endif

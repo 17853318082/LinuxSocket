@@ -61,7 +61,14 @@ int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen)
     n = accept(sockfd, addr, addrlen);
     if (n == -1)
     {
+        // errno是c++标准库中定义的全局变量，用于记录发生错误是的错误码，在调用程序中如果某些函数出错，那么就会设置errno的变量，表示错误类型
+        // EAGAIN：表示资源暂时不可用     EINTR:表示操作被信号中断
+        if(errno!=EAGAIN &&errno!=EINTR){
+            // 错误处理
+            error("accept");
+        }
         error("accept");
+        error(strerror(errno));
     }
     success("accept");
     return n;
@@ -220,4 +227,36 @@ ssize_t Readline(int fd, char *vptr, size_t maxlen)
     }
     *ptr = 0;
     return n;
+}
+/*封装一个socket操作*/
+int InitListenSocket(short port)
+{
+    /*
+    初始化一个socket套接字
+    添加了 socket 非阻塞 ， 端口复用
+    */
+    // 创建一个套接字 socket
+    int lfd = Socket(AF_INET, SOCK_STREAM, 0);
+
+    // 将socket设置为非阻塞
+    fcntl(lfd, F_SETFL, O_NONBLOCK);
+
+    // 设置端口复用
+    int opt = 1;
+    setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+
+    // 创建一个地址结构
+    struct sockaddr_in l_addr;
+    memset(&l_addr, 0, sizeof(l_addr)); // 将地址清空
+    l_addr.sin_family = AF_INET;
+    l_addr.sin_port = htons(port);
+    l_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    // bind为套接字绑定ip
+    Bind(lfd, (struct sockaddr *)&l_addr, sizeof(l_addr));
+
+    // listen设置监听上限
+    Listen(lfd, 256);
+
+    // 返回一个绑定好的套接字
+    return lfd;
 }

@@ -58,7 +58,7 @@ int main()
             {
                 cfd = Accept(s_sock,(struct sockaddr*)&client_addr,&client_addr_len);            // 获取客户端链接并加入到红黑树中
                 tep.events = EPOLLIN; // 初始化cfd的监听属性
-                tep.data.fd = cfd;
+                tep.data.fd = cfd;    // 需要监听的字节符
                 epoll_ctl(epfd, EPOLL_CTL_ADD, cfd, &tep); // 将cfd加入到监听红黑树
             }
             else
